@@ -13,7 +13,7 @@ var cwd = process.cwd();
 // Public Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-module.exports = function (envPath) {
+module.exports = function (envPath, defaultArg) {
 
   // Get the standard config.json file relative to the gulpfile.js file
   defaultConfigPath = path.join(cwd, 'config.json');
@@ -22,7 +22,7 @@ module.exports = function (envPath) {
   if ( typeof(envPath) !== 'undefined' && typeof(envPath) == 'string' ) {
 
     // Check if any argument flags were pass, and grab the first one.
-    var argument = Object.keys(argv)[1];
+    var argument = Object.keys(argv)[1] || defaultArg;
 
     if ( typeof argument !== 'undefined' ) {
 

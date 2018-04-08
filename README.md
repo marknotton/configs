@@ -43,6 +43,10 @@ Now pass in where your sites are located (relative to your gulpfile.js)
 ```js
 const config = require('gulp-config-grabber')('dev');
 ```
+You can also pass in a default argument to be used on each gulp call.
+```js
+const config = require('gulp-config-grabber')('dev', 'site1');
+```
 If your sites live in the root. You'll still have to call a function after the 'require'
 ```js
 const config = require('gulp-config-grabber')();
