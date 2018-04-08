@@ -3,18 +3,14 @@
 Combine multiple config.json files using an argument to distinguish an environment specific config.josn file. Purpose built for multisite projects.
 
 ### Installation
-
 ```
 npm i gulp-config-grabber
 ```
-
 *If you're just trying to include a config.json file, there is no need to install this module. You can do this natively:*
 ```
 const config = require('./config.json');
 ```
-
 ### How to use:
-
 Assume you have a project that looks like this:
 ```
 project/
@@ -44,34 +40,26 @@ project/
        └── config.json
 ```
 Now pass in where your sites are located (relative to your gulpfile.js)
-
 ```js
 const config = require('gulp-config-grabber')('dev');
 ```
-
 If your sites live in the root. You'll still have to call a function after the 'require'
-
 ```js
 const config = require('gulp-config-grabber')();
 ```
-
 To distinguish what config file Gulp should use, pass in an arguments flag that
 matches all or part of your site directory.
-
 ```js
 gulp default --site2
 ```
-
 This will grab the config.json file in your site2 project and deep merge everything
 to your default config.json in the root. Note, Gulp Config Grabber will only use the first argument flag.
 
 ### Variables
-
 An added feature you don't get natively with config.json files is the option to use
 special variables.
 
 #### Example:
-
 ```json
 {
   "project" : "My Awesome Site",
@@ -85,9 +73,7 @@ special variables.
   }
 }
 ```
-
 Will return this:
-
 ```json
 {
   "project" : "My Awesome Site",
@@ -101,5 +87,4 @@ Will return this:
   }
 }
 ```
-
 Note, these variables will only work in nested objects.
