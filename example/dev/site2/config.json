@@ -1,0 +1,20 @@
+{
+  "project" : "Site 2",
+  "site" : "site2",
+  "host" : "www.site2.loc",
+
+  "settings" : {
+    "minify" : false
+  },
+
+  "paths" : {
+    "videos" : "{public}/assets/videos"
+  },
+
+  "sources" : {
+    "core" : [
+      "node_modules/jquery/dist/jquery.js"
+      "node_modules/vide/dist/vide.js"
+    ]
+  }
+}

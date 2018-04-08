@@ -1,6 +1,6 @@
 {
   "name": "gulp-config-grabber",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Combine multiple config.json files using an arguments parse to distinguish your settings. Designed for use with multisite projects.",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,8 @@
     "url": "git+https://github.com/marknotton/gulp-config-grabber.git"
   },
   "dependencies": {
-    "minimist": "1.2.0"
+    "minimist": "1.2.0",
+    "deepmerge": "2.1.0"
   },
   "keywords": [
     "gulp",

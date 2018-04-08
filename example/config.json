@@ -1,0 +1,31 @@
+{
+  "project" : "Default",
+  "site" : "default",
+  "host" : "www.default.loc",
+
+  "settings" : {
+    "sourceMaps"  : false,
+    "minify"	    : true
+  },
+
+  "paths" : {
+    "public"      : "public_html",
+    "scripts"     : "dev/scripts",
+    "sass"        : "dev/sass",
+    "js"          : "{public}/assets/js",
+    "css"         : "{public}/assets/css",
+    "images"      : "{public}/assets/images"
+  },
+
+  "sources" : {
+    "js" : [
+      "{scripts}/*/**.js"
+    ],
+    "core" : [
+      "node_modules/jquery/dist/jquery.js"
+    ],
+    "sass" : [
+      "{sass}/**/*.scss"
+    ]
+  }
+}
