@@ -53,9 +53,9 @@ const config = require('gulp-config-grabber')();
 ```
 You can define the 'environment location' and 'default site' settings in your root config.json too.
 
-Default site can be defined as 'default-site' or 'default'.
+Default site can be defined as ```default-site``` or ```default```.
 
-Default environment path can be defined as 'devPath' or nested in 'paths/dev'.
+Default environment path can be defined as ```devPath``` or nested in ```paths > dev```.
 
 To distinguish what config file Gulp should use, pass in an arguments flag that
 matches all or part of your site directory.
