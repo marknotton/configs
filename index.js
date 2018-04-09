@@ -19,6 +19,16 @@ module.exports = function (envPath, defaultArg) {
   defaultConfigPath = path.join(cwd, 'config.json');
   var config = require(defaultConfigPath);
 
+  // Env Path fallbacks check
+  if ( typeof envPath === 'undefined' ) {
+    envPath = 'devPath' in config ? config['devPath'] : ( 'dev' in config['paths'] ? config['paths']['dev'] : undefined);
+  }
+
+  // Default arguments fallbacks check
+  if ( typeof defaultArg === 'undefined' ) {
+    defaultArg = 'default-site' in config ? config['default-site'] : ( 'default' in config ? config['default'] : undefined);;
+  }
+
   if ( typeof(envPath) !== 'undefined' && typeof(envPath) == 'string' ) {
 
     // Check if any argument flags were pass, and grab the first one.

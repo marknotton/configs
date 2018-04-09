@@ -2,6 +2,7 @@
   "project" : "Default",
   "site" : "default",
   "host" : "www.default.loc",
+  "default" : "site1",
 
   "settings" : {
     "sourceMaps"  : false,
@@ -10,8 +11,9 @@
 
   "paths" : {
     "public"      : "public_html",
-    "scripts"     : "dev/scripts",
-    "sass"        : "dev/sass",
+    "dev"         : "dev",
+    "scripts"     : "{dev}/scripts",
+    "sass"        : "{dev}/sass",
     "js"          : "{public}/assets/js",
     "css"         : "{public}/assets/css",
     "images"      : "{public}/assets/images"
