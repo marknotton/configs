@@ -1,4 +1,6 @@
 const gulp   = require('gulp');
-const config = require('gulp-config-grabber')('dev');
+const configs = require('gulp-config-grabber');
+
+const config = configs.grab();
 
 console.log(config);
