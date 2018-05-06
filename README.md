@@ -1,16 +1,61 @@
+
 # Gulp Config Grabber
 
-Combine multiple config.json files using an argument to distinguish an environment specific config.josn file. Purpose built for multisite projects.
+Combine multiple config.json files using a flag to distinguish different environments.
 
 ### Installation
 ```
 npm i gulp-config-grabber
 ```
-*If you're just trying to include a config.json file, there is no need to install this module. You can do this natively:*
+```js
+const configs = require('gulp-config-grabber');
+```
+
+If you're just trying to include a config.json file, there is no need to install this module. You can do this natively:
 ```
 const config = require('./config.json');
 ```
 ### How to use:
+
+Pass in an object of options. See below details on the options available.
+
+```
+const config = configs.grab({
+	file : "config.json",
+	env : "production",
+	flag : "site2",
+	directory : "dev"
+});
+```
+or if you're just passing in a different config file, you can pass in a single string:
+
+```
+const config = configs.grab("config.json");
+```
+#### Options
+| Param | Default | Description |
+|--|--|--|
+| file | config.json | The name of the file that should be included
+| env | - | Some objects in the config file can be merged based on a environment name
+| flag | - | Force a command flag to target a specific site directory
+| directory | /dev | Define a directory to search for your site flag
+
+```
+You can pass in a default argument to be used on each gulp call.
+```js
+const config = configs.grab({'env':'dev', 'directory':'site1');
+```
+
+To distinguish what config file Gulp should use, pass in an arguments flag that
+matches all or part of your site directory.
+```js
+gulp default --site2
+```
+This will grab the config.json file in your site2 project and deep merge everything
+to your default config.json in the root. Note, Gulp Config Grabber will only use the first argument flag.
+
+### Use Case
+
 Assume you have a project that looks like this:
 ```
 project/
@@ -21,7 +66,7 @@ project/
     ├── site1/
     └── site2/
 ```
-Your config.json file has all the settings you need. But you need to add some
+Your root config.json file has all the settings you need. But you need to add some
 bespoke options for site2 only. You could create a new config.json.
 
 But if you update one config.json, you'll need to manage the changes for all your config.json files.
@@ -39,35 +84,7 @@ project/
     └── site2/
        └── config.json
 ```
-Now pass in where your sites are located (relative to your gulpfile.js)
-```js
-const config = require('gulp-config-grabber')('dev');
-```
-You can also pass in a default argument to be used on each gulp call.
-```js
-const config = require('gulp-config-grabber')('dev', 'site1');
-```
-If your sites live in the root. You'll still have to call a function after the 'require'
-```js
-const config = require('gulp-config-grabber')();
-```
-You can define the 'environment location' and 'default site' settings in your root config.json too.
-
-Default site can be defined as ```default-site``` or ```default```.
-
-Default environment path can be defined as ```devPath``` or nested in ```paths > dev```.
-
-To distinguish what config file Gulp should use, pass in an arguments flag that
-matches all or part of your site directory.
-```js
-gulp default --site2
-```
-This will grab the config.json file in your site2 project and deep merge everything
-to your default config.json in the root. Note, Gulp Config Grabber will only use the first argument flag.
-
-### Variables
-An added feature you don't get natively with config.json files is the option to use
-special variables.
+You can use special variable names that will be passed any nested objects.
 
 #### Example:
 ```json
@@ -97,4 +114,48 @@ Will return this:
   }
 }
 ```
-Note, these variables will only work in nested objects.
+There are two specific nested objects that Gulp Config Grabber looks for to manage environmental merging. "paths" and "settings".
+
+```js
+const config = configs.grab({'env':'dev');
+```
+
+#### Example config.json:
+```json
+{
+  "project" : "My Awesome Site",
+  "site"    : "site1",
+  "host"    : "www.site1.loc",
+
+  "settings" : {
+    "*" : {
+      "sourceMaps"  : false,
+      "minify"	    : false,
+      "versioning"  : true,
+    },
+    "production" : {
+      "minify"	    : true,
+    },
+    "dev" : {
+      "sourceMaps"  : true,
+      "minify"	    : true,
+      "special"	    : true,
+    }
+  }
+}
+```
+Will return this:
+```json
+{
+  "project" : "My Awesome Site",
+  "site"    : "site1",
+  "host"    : "www.site1.loc",
+
+  "settings" : {
+      "sourceMaps"  : true,
+      "minify"	    : true,
+      "versioning"  : true,
+      "special"	    : true,
+  }
+}
+```
