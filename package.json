@@ -1,6 +1,6 @@
 {
   "name": "gulp-config-grabber",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Combine multiple config.json files using a flag to distinguish different environments.",
   "main": "index.js",
   "scripts": {

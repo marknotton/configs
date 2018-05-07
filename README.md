@@ -1,4 +1,5 @@
 
+
 # Gulp Config Grabber
 
 Combine multiple config.json files using a flag to distinguish different environments.
@@ -40,8 +41,8 @@ const config = configs.grab("config.json");
 | flag | - | Force a command flag to target a specific site directory
 | directory | /dev | Define a directory to search for your site flag
 
-```
 You can pass in a default argument to be used on each gulp call.
+
 ```js
 const config = configs.grab({'env':'dev', 'directory':'site1');
 ```
@@ -50,6 +51,10 @@ To distinguish what config file Gulp should use, pass in an arguments flag that
 matches all or part of your site directory.
 ```js
 gulp default --site2
+```
+You can also manually pass in a environmental command to overwrite any in the config files.
+```js
+gulp default --site2 --production
 ```
 This will grab the config.json file in your site2 project and deep merge everything
 to your default config.json in the root. Note, Gulp Config Grabber will only use the first argument flag.

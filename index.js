@@ -7,10 +7,11 @@
 // Dependencies
 const path      = require('path'),                            // Handles and normalises file paths
       fs        = require('fs'),                              // File system add, edit, and remove
-      argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
+      argv     = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
       deepmerge = require('deepmerge');                       // Depp Merges Arrays/Bojects
 
 const cwd = process.cwd();
+const flags = Object.keys(argv).slice(1);
 
 module.exports.grab = grab;
 
@@ -18,20 +19,9 @@ module.exports.grab = grab;
 // Public Functions
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Combine multiple config.json files using a flag to distinguish different environments.
- * @param  {object | string}  Strings are a shorthand for changing the filename.
- *                            Objects should contain the following arguments: *
- * - @param {string} file      The name of the file that should be included
- * - @param {string} env       Some objects in the config file can be merged based on a environment name
- * - @param {string} flag      Force a command flag to target a specific site directory
- * - @param {string} directory Define a directory to search for your site flag
- * @return {object}
- */
 function grab() {
 
-  let defaultConfig   = 'config.json';
-  let defaultDirectory = 'dev';
+  let defaultConfig = 'config.json';
 
   // If an object was passed, destructure by checking for these variables.
   // Defaults are applied if 'file', isn't found.
@@ -45,28 +35,24 @@ function grab() {
   // Get the config file relative to the gulpfile.js file
   var config = require(path.join(cwd, file));
 
+  // console.log(flags, envFlags);
   // Grab any arguments flags that were passed via the command line.
-  var flag = Object.keys(argv)[1] || undefined;
+  var siteFlag = flag || flags[0] || config['default-site'] || config['default'] || undefined;
 
-  // Check to see if there is a default site name to use as the flag.
-  // This is should only be used for multisites envionments;
-  if ( flag === 'undefined' ) {
-    if ( 'default-site' in config ) {
-      // Check for 'default-site'
-      flag = config['default-site']
-    } else if ( 'default' in config ) {
-      // Check for 'default'
-      flag = config['default']
-    }
+  var envFlags = config.settings['*'] !== 'undefined' ? Object.keys(config.settings) : undefined;
+
+  // if ( envFlags && flags && envFlags.some(r=> flags.indexOf(r) >= 0) ) {
+  // Site flag can not be an environment flag. Reset the siteFlag/
+  if ( envFlags.includes(siteFlag) ) {
+    siteFlag = flag || config['default-site'] || config['default'] || undefined;
+
   }
 
-  // If there is a flag, start the search for the additional config file
-  if ( flag !== 'undefined' ) {
+  // If there is a site flag, start the search for the additional config file
+  if ( siteFlag !== 'undefined' ) {
 
     // Find dev path is one wasn't passed
-    if ( directory !== 'undefined') {
-      directory = config.paths['dev'] || defaultDirectory;
-    }
+    directory = directory || config.paths['dev'] || 'dev';
 
     // Search for config file
     let content = false;
@@ -81,7 +67,7 @@ function grab() {
         if(fs.statSync(path.join(cwd, directory, dir)).isDirectory()) {
 
           // Check is all or part of the flag exists in one of the directories
-          if (flag == dir || dir.indexOf(flag) !== -1) {
+          if (siteFlag == dir || dir.indexOf(siteFlag) !== -1) {
             // Deep merge all config settings.
             content = require(path.join(cwd, directory, dir, file));
           }
@@ -101,14 +87,37 @@ function grab() {
 
   }
 
+  // Get all config settings
+  var envFlags = config.settings['*'] !== 'undefined' ? Object.keys(config.settings) : undefined;
+  // If one of the settings has a key of '*', assume there are going to be other
+  // environemnt options and remove the '*' key so only environmental keys exist.
+  if ( envFlags ) {
+    envFlags.splice(envFlags.indexOf('*'), 1);
+
+    for (var i in flags) {
+      if ( envFlags.includes(flags[i]) ) {
+        env = flags[i];
+        break;
+      }
+    }
+  }
+
   // Check if there are any environmental settings. Merge the passed enviroment settings and flatting settings object
-  if ( typeof env !== 'undefined' && '*' in config.settings && env in config.settings ) {
-    config.settings = Object.assign(config.settings['*'], config.settings[env]);;
+  if ('*' in config.settings ) {
+    if ( typeof env !== 'undefined' && env in config.settings) {
+      config.settings = Object.assign(config.settings['*'], config.settings[env]);;
+    } else {
+      config.settings = config.settings['*'];
+    }
   }
 
   // Check if there are any environmental paths. Merge the passed enviroment path and flatting paths object
-  if ( typeof env !== 'undefined' && '*' in config.paths && env in config.paths ) {
-    config.paths = Object.assign(config.paths['*'], config.paths[env]);;
+  if ('*' in config.paths ) {
+    if ( typeof env !== 'undefined' && env in config.paths) {
+      config.paths = Object.assign(config.paths['*'], config.paths[env]);;
+    } else {
+      config.paths = config.paths['*'];
+    }
   }
 
   // Add trailing slashes to string in the paths object;
