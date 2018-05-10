@@ -45,7 +45,6 @@ function grab() {
   // Site flag can not be an environment flag. Reset the siteFlag/
   if ( envFlags.includes(siteFlag) ) {
     siteFlag = flag || config['default-site'] || config['default'] || undefined;
-
   }
 
   // If there is a site flag, start the search for the additional config file
@@ -87,38 +86,10 @@ function grab() {
 
   }
 
-  // Get all config settings
-  var envFlags = config.settings['*'] !== 'undefined' ? Object.keys(config.settings) : undefined;
-  // If one of the settings has a key of '*', assume there are going to be other
-  // environemnt options and remove the '*' key so only environmental keys exist.
-  if ( envFlags ) {
-    envFlags.splice(envFlags.indexOf('*'), 1);
+  // Manage these config settings as per the envionrment settings
+  config.settings = _mergeSettings(config.settings, env);
+  config.paths = _mergeSettings(config.paths, env);
 
-    for (var i in flags) {
-      if ( envFlags.includes(flags[i]) ) {
-        env = flags[i];
-        break;
-      }
-    }
-  }
-
-  // Check if there are any environmental settings. Merge the passed enviroment settings and flatting settings object
-  if ('*' in config.settings ) {
-    if ( typeof env !== 'undefined' && env in config.settings) {
-      config.settings = Object.assign(config.settings['*'], config.settings[env]);;
-    } else {
-      config.settings = config.settings['*'];
-    }
-  }
-
-  // Check if there are any environmental paths. Merge the passed enviroment path and flatting paths object
-  if ('*' in config.paths ) {
-    if ( typeof env !== 'undefined' && env in config.paths) {
-      config.paths = Object.assign(config.paths['*'], config.paths[env]);;
-    } else {
-      config.paths = config.paths['*'];
-    }
-  }
 
   // Add trailing slashes to string in the paths object;
   for(let p in config.paths) {
@@ -153,4 +124,34 @@ function grab() {
 
   return config;
 
+}
+
+function _mergeSettings(options, env) {
+
+  var originalEnv = env;
+  // Get all config settings
+  var envFlags = options['*'] !== 'undefined' ? Object.keys(options) : undefined;
+  // If one of the settings has a key of '*', assume there are going to be other
+  // environemnt options and remove the '*' key so only environmental keys exist.
+  // Also check that the flag exists.
+  if ( envFlags ) {
+    envFlags.splice(envFlags.indexOf('*'), 1);
+    for (var i in flags) {
+      if ( envFlags.includes(flags[i]) ) {
+        env = flags[i];
+        break;
+      }
+    }
+  }
+
+  // Check if there are any environmental settings. Merge the passed enviroment settings and flatting settings object
+  if ('*' in options ) {
+    if ( typeof env !== 'undefined' && env in options) {
+      options = Object.assign(options['*'], options[env]);;
+    } else {
+      options = options['*'];
+    }
+  }
+
+  return options;
 }
