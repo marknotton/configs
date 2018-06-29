@@ -25,7 +25,7 @@ const config = configs.grab({
 	file : "config.json",
 	env : "production",
 	flag : "site2",
-	directory : "dev"
+	directory : "src"
 });
 ```
 or if you're just passing in a different config file, you can pass in a single string:
@@ -39,12 +39,12 @@ const config = configs.grab("config.json");
 | file | config.json | The name of the file that should be included
 | env | - | Some objects in the config file can be merged based on a environment name
 | flag | - | Force a command flag to target a specific site directory
-| directory | /dev | Define a directory to search for your site flag
+| directory | /src | Define a directory to search for your site flag
 
 You can pass in a default argument to be used on each gulp call.
 
 ```js
-const config = configs.grab({'env':'dev', 'directory':'site1');
+const config = configs.grab({'env':'src', 'directory':'site1');
 ```
 
 To distinguish what config file Gulp should use, pass in an arguments flag that
@@ -67,7 +67,7 @@ project/
 ├── gulpfile.js
 ├── config.json
 ├── package.json
-└── dev/
+└── src/
     ├── site1/
     └── site2/
 ```
@@ -83,7 +83,7 @@ project/
 ├── gulpfile.js
 ├── config.json
 ├── package.json
-└── dev/
+└── src/
     ├── site1/
     │  └── config.json
     └── site2/
@@ -100,8 +100,8 @@ You can use special variable names that will be passed any nested objects.
 
   "paths" : {
     "public"  : "public_html/{site}",
-    "scripts" : "dev/{site}/scripts",
-    "sass"    : "dev/{site}/sass"
+    "scripts" : "src/{site}/scripts",
+    "sass"    : "src/{site}/sass"
   }
 }
 ```
@@ -114,8 +114,8 @@ Will return this:
 
   "paths" : {
     "public"  : "public_html/site1",
-    "scripts" : "dev/site1/scripts",
-    "sass"    : "dev/site1/sass"
+    "scripts" : "src/site1/scripts",
+    "sass"    : "src/site1/sass"
   }
 }
 ```

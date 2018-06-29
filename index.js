@@ -52,7 +52,7 @@ function grab() {
   if ( siteFlag !== 'undefined' ) {
 
     // Find dev path is one wasn't passed
-    directory = directory || config.paths['dev'] || 'dev';
+    directory = directory || config.paths['src'] || 'src';
 
     // Search for config file
     let content = false;

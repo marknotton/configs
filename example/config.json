@@ -11,9 +11,8 @@
 
   "paths" : {
     "public"      : "public_html",
-    "dev"         : "dev",
-    "scripts"     : "{dev}/scripts",
-    "sass"        : "{dev}/sass",
+    "scripts"     : "src/scripts",
+    "sass"        : "src/sass",
     "js"          : "{public}/assets/js",
     "css"         : "{public}/assets/css",
     "images"      : "{public}/assets/images"
