@@ -7,8 +7,8 @@
 // Dependencies
 const path      = require('path'),                            // Handles and normalises file paths
       fs        = require('fs'),                              // File system add, edit, and remove
-      argv     = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
-      deepmerge = require('deepmerge');                       // Depp Merges Arrays/Bojects
+      argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
+      deepmerge = require('deepmerge');                       // Deep Merges Arrays/Ojects
 
 const cwd = process.cwd();
 const flags = Object.keys(argv).slice(1);
@@ -28,24 +28,54 @@ function grab() {
   if ( typeof arguments[0] == 'object') {
     var { file = defaultConfig, env, flag, directory } = arguments[0];
   } else {
-    // If anything else was passed (presumable a string), use this as the file.
+    // If anything else was passed (presumably a string), use this as the file.
     var file = arguments[0] || defaultConfig;
   }
 
   // Get the config file relative to the gulpfile.js file
   var config = require(path.join(cwd, file));
 
-  // console.log(flags, envFlags);
   // Grab any arguments flags that were passed via the command line.
   var siteFlag = flag || flags[0] || config['default-site'] || config['default'] || undefined;
 
-  var envFlags = config.settings['*'] !== 'undefined' ? Object.keys(config.settings) : undefined;
+  var envFlags = [env];
 
-  // if ( envFlags && flags && envFlags.some(r=> flags.indexOf(r) >= 0) ) {
-  // Site flag can not be an environment flag. Reset the siteFlag/
+  // Run through every element in the config
+  var envConfigMerged = Object.keys(config).reduce((result, val) => {
+
+    // If an element is an object, and contains default settings defined with a "*" key
+    if ( typeof config[val] == 'object' && typeof config[val]['*'] !== 'undefined') {
+
+      // Then check if any of the keys within this object matches any of the passed flags
+      let matched = flags.filter(element => Object.keys(config[val]).includes(element))[0];
+
+      // If no flag was found, fallback to the current enviroment variable
+      let flag = typeof matched !== 'undefined' ? matched : env;
+
+      // Add cnofirmed env flags to the envFlag array so we can skip this flag for site flags intead.
+      envFlags.push(flag);
+
+      // Default results
+      let results =  typeof config[val]['*'] !== 'undefined' ? config[val]['*'] : config[val];
+
+      // Perform a deep merge if there are default [ * ] settings, and enviroment settings found.
+      if ( typeof config[val]['*'] !== 'undefined' && typeof config[val][flag] !== 'undefined' ) {
+
+        results = deepmerge( config[val]['*'],  config[val][flag]);
+
+      }
+
+      result.push(results);
+    }
+    return result;
+  }, []);
+
+  // Remove duplicate env flags
+  var envFlags = Array.from(new Set(envFlags));
+
+  // Site flag can not be an environment flag. Reset the siteFlag
   if ( envFlags.includes(siteFlag) ) {
     siteFlag = flag || config['default-site'] || config['default'] || undefined;
-
   }
 
   // If there is a site flag, start the search for the additional config file
