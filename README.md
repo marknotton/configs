@@ -119,7 +119,8 @@ Will return this:
   }
 }
 ```
-There are two specific nested objects that Gulp Config Grabber looks for to manage environmental merging. "paths" and "settings".
+All objects can have special environmental nested options. If the first level of a nested object contains environment variables,
+(which are defined either in the initial set up or via a command flag)... then that object will be flattened respectively.
 
 ```js
 const config = configs.grab({'env':'dev');
@@ -149,7 +150,7 @@ const config = configs.grab({'env':'dev');
   }
 }
 ```
-Will return this:
+Will return this in a dev environment:
 ```json
 {
   "project" : "My Awesome Site",
