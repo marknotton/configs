@@ -40,6 +40,7 @@ const config = configs.grab("config.json");
 | env | - | Some objects in the config file can be merged based on a environment name
 | flag | - | Force a command flag to target a specific site directory
 | directory | /src | Define a directory to search for your site flag
+| dynamic | ['paths'] | Define a selection of keys that contain dynamic variables. These will be checked against all properties and manage the dynamic variables, e.g. `{images}`
 
 You can pass in a default argument to be used on each gulp call.
 
@@ -165,3 +166,12 @@ Will return this in a dev environment:
   }
 }
 ```
+
+### Create
+
+
+Instead of `grab`, you can use `create` instead:
+```
+const config = configs.create({'env': environment})
+```
+This does exactly the same as grab, only it generates a `config.lock` in the root path. This will contain the JSON code with environments managed and dynamic variable handled. The purpose of this is to avoid server-side languages (php) having to perform all the same logic.

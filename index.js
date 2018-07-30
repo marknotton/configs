@@ -8,16 +8,36 @@
 const path      = require('path'),                            // Handles and normalises file paths
       fs        = require('fs'),                              // File system add, edit, and remove
       argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
-      deepmerge = require('deepmerge');                       // Deep Merges Arrays/Ojects
+      deepmerge = require('deepmerge'),                       // Deep Merges Arrays/Ojects
+      log       = require('fancy-log'),
+      chalk     = require('chalk');
 
 const cwd = process.cwd();
 const flags = Object.keys(argv).slice(1);
 
 module.exports.grab = grab;
+module.exports.create = create;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Public Functions
 ////////////////////////////////////////////////////////////////////////////////
+
+function create() {
+  const config = grab(arguments[0]);
+
+  let logType = 'Updated:';
+
+  fs.access('config.lock', (err) => {
+    if (err) {
+      logType = 'Created:';
+    }
+  });
+
+  fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
+    log(`${chalk.cyan(logType)} ${chalk.green('config.lock')}`);
+  });
+  return config;
+}
 
 function grab() {
 
@@ -26,7 +46,7 @@ function grab() {
   // If an object was passed, destructure by checking for these variables.
   // Defaults are applied if 'file', isn't found.
   if ( typeof arguments[0] == 'object') {
-    var { file = defaultConfig, env, flag, directory } = arguments[0];
+    var { file = defaultConfig, env, flag, directory, dynamic = ['paths']} = arguments[0];
   } else {
     // If anything else was passed (presumably a string), use this as the file.
     var file = arguments[0] || defaultConfig;
@@ -136,23 +156,36 @@ function grab() {
     config.paths[p] = value.length ? value.replace(/\/?$/, '/') : value;
   }
 
-  // Convert the paths object to a string
-  var pathsToString = JSON.stringify(config.paths);
 
-  // Replace any dynamic variables defined in the paths array specifically;
-  for(let p in Object.assign(config.paths, {"site":config.site})) {
-    pathsToString = pathsToString.replace(new RegExp('{'+ p +'}', 'g'), config.paths[p]);
+  for(let i in dynamic) {
+
+    let key = dynamic[i];
+
+    // Convert the paths object to a string
+    var pathsToString = JSON.stringify(config[key]);
+
+    // Replace any dynamic variables defined in the paths array specifically;
+    for(let p in Object.assign(config[key], {"site":config.site})) {
+      pathsToString = pathsToString.replace(new RegExp('{'+ p +'}', 'g'), config[key][p]);
+    }
+
+    // Convert the paths string back to an object
+    config[key] = JSON.parse(pathsToString);
+
   }
-
-  // Convert the paths string back to an object
-  config.paths = JSON.parse(pathsToString);
 
   // Covnert the entire config object to a string
   var configToString = JSON.stringify(config);
 
-  // Replace any dynamic variables defined in the config files.
-  for(let p in config.paths) {
-    configToString = configToString.replace(new RegExp('{'+ p +'}', 'g'), config.paths[p]);
+  for(let i in dynamic) {
+
+    let key = dynamic[i];
+
+    // Replace any dynamic variables defined in the config files.
+    for(let p in config[key]) {
+      configToString = configToString.replace(new RegExp('{'+ p +'}', 'g'), config[key][p]);
+    }
+
   }
 
   // Remove any double slashes
