@@ -26,15 +26,19 @@ function create() {
   const config = grab(arguments[0]);
 
   let logType = 'Updated:';
+	let logPrefix = `${chalk.cyan(logType)}`;
 
   fs.access('config.lock', (err) => {
     if (err) {
       logType = 'Created:';
+			logPrefix = `${chalk.magenta(logType)}`;
     }
   });
 
   fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
-    log(`${chalk.cyan(logType)} ${chalk.green('config.lock')}`);
+
+    log(`${logPrefix} ${chalk.green('config.lock')}`);
+
   });
   return config;
 }
