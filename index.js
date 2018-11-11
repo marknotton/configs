@@ -6,7 +6,7 @@
 
 // Dependencies
 const path      = require('path'),                            // Handles and normalises file paths
-      fs        = require('fs'),                              // File system add, edit, and remove
+      fs        = require('fs-extra'),                        // File system add, edit, and remove
       argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
       deepmerge = require('deepmerge'),                       // Deep Merges Arrays/Ojects
       log       = require('fancy-log'),
@@ -35,11 +35,16 @@ function create() {
     }
   });
 
-  fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
+	// Get the current config.lock data so that is can be compared to.
+	// IF the config settings has changed at all, generate a new .lock file.
+	fs.readJson('config.lock', (err, data) => {
+		if (err || JSON.stringify(data) != JSON.stringify(config)) {
+			fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
+				log(`${logPrefix} ${chalk.green('config.lock')}`);
+			});
+		}
+	})
 
-    log(`${logPrefix} ${chalk.green('config.lock')}`);
-
-  });
   return config;
 }
 
