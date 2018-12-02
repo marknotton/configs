@@ -1,5 +1,5 @@
 const gulp    = require('gulp');
-const configs = require('gulp-config-grabber');
+const configs = require('@marknotton/configs');
 const config  = configs.grab();
 
 console.log(config);

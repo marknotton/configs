@@ -1,21 +1,21 @@
 {
   "project" : "Default",
-  "site" : "default",
-  "host" : "www.default.loc",
+  "site"    : "default",
+  "host"    : "www.default.loc",
   "default" : "site1",
 
   "settings" : {
-    "sourceMaps"  : false,
-    "minify"	    : true
+    "sourceMaps" : false,
+    "minify"	   : true
   },
 
   "paths" : {
-    "public"      : "public_html",
-    "scripts"     : "src/scripts",
-    "sass"        : "src/sass",
-    "js"          : "{public}/assets/js",
-    "css"         : "{public}/assets/css",
-    "images"      : "{public}/assets/images"
+    "public"  : "public_html",
+    "scripts" : "src/scripts",
+    "sass"    : "src/sass",
+    "js"      : "{public}/assets/js",
+    "css"     : "{public}/assets/css",
+    "images"  : "{public}/assets/images"
   },
 
   "sources" : {

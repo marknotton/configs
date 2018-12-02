@@ -9,10 +9,8 @@ const path      = require('path'),                            // Handles and nor
       fs        = require('fs-extra'),                        // File system add, edit, and remove
       argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
       deepmerge = require('deepmerge'),                       // Deep Merges Arrays/Ojects
-      log       = require('fancy-log'),
-      chalk     = require('chalk');
+      log       = require('@marknotton/lumberjack');
 
-const cwd = process.cwd();
 const flags = Object.keys(argv).slice(1);
 
 module.exports.grab = grab;
@@ -22,17 +20,15 @@ module.exports.create = create;
 // Public Functions
 ////////////////////////////////////////////////////////////////////////////////
 
+// Create ----------------------------------------------------------------------
+
 function create() {
   const config = grab(arguments[0]);
 
-  let logType = 'Updated:';
-	let logPrefix = `${chalk.cyan(logType)}`;
+  let type = 'Updated:';
 
   fs.access('config.lock', (err) => {
-    if (err) {
-      logType = 'Created:';
-			logPrefix = `${chalk.magenta(logType)}`;
-    }
+    if (err) { type = 'Created:' }
   });
 
 	// Get the current config.lock data so that is can be compared to.
@@ -40,13 +36,15 @@ function create() {
 	fs.readJson('config.lock', (err, data) => {
 		if (err || JSON.stringify(data) != JSON.stringify(config)) {
 			fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
-				log(`${logPrefix} ${chalk.green('config.lock')}`);
+				log(type, 'config.lock');
 			});
 		}
 	})
 
   return config;
 }
+
+// Grab ------------------------------------------------------------------------
 
 function grab() {
 
@@ -62,7 +60,7 @@ function grab() {
   }
 
   // Get the config file relative to the gulpfile.js file
-  var config = require(path.join(cwd, file));
+  var config = require(path.join(process.cwd(), file));
 
   // Grab any arguments flags that were passed via the command line.
   var siteFlag = flag || flags[0] || config['default-site'] || config['default'] || undefined;
@@ -118,10 +116,8 @@ function grab() {
     // Find dev path if one wasn't passed
     directory = directory || config.paths['src'] ||  'src';
 
-
     // Search for config file
     let content = false;
-
 
     let filePath = '';
 
@@ -129,16 +125,16 @@ function grab() {
     try {
 
       // Loop through all files and folders in the dev directory
-      fs.readdirSync(path.join(cwd, directory)).forEach(dir => {
+      fs.readdirSync(path.join(process.cwd(), directory)).forEach(dir => {
 
         // Check if the the path is a directory
-        if(fs.statSync(path.join(cwd, directory, dir)).isDirectory()) {
+        if(fs.statSync(path.join(process.cwd(), directory, dir)).isDirectory()) {
 
           // Check is all or part of the flag exists in one of the directories
           if (siteFlag == dir || dir.indexOf(siteFlag) !== -1) {
 
             // Deep merge all config settings.
-            filePath = path.join(cwd, directory, dir, file);
+            filePath = path.join(process.cwd(), directory, dir, file);
             content = require(filePath);
           }
         }
@@ -164,7 +160,6 @@ function grab() {
     let value = config.paths[p];
     config.paths[p] = value.length ? value.replace(/\/?$/, '/') : value;
   }
-
 
   for(let i in dynamic) {
 

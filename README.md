@@ -1,18 +1,19 @@
+# Configs
 
-
-# Gulp Config Grabber
+![Made For NPM](https://img.shields.io/badge/Made%20for-NPM-#CB3837.svg)
 
 Combine multiple config.json files using a flag to distinguish different environments.
 
-### Installation
+## Installation
 ```
-npm i gulp-config-grabber
+npm i @marknotton/configs --save-dev
 ```
 ```js
-const configs = require('gulp-config-grabber');
+const configs = require('@marknotton/configs');
 ```
+------
 
-If you're just trying to include a config.json file, there is no need to install this module. You can do this natively:
+If you're just trying to include a config.json file, there is no need to install this package. You can do this natively:
 ```
 const config = require('./config.json');
 ```
@@ -34,7 +35,7 @@ or if you're just passing in a different config file, you can pass in a single s
 const config = configs.grab("config.json");
 ```
 #### Options
-| Param | Default | Description |
+| Option | Default | Description |
 |--|--|--|
 | file | config.json | The name of the file that should be included
 | env | - | Some objects in the config file can be merged based on a environment name
@@ -45,10 +46,10 @@ const config = configs.grab("config.json");
 You can pass in a default argument to be used on each gulp call.
 
 ```js
-const config = configs.grab({'env':'src', 'directory':'site1');
+const config = configs.grab({'env':'src', 'directory':'site1'});
 ```
 
-To distinguish what config file Gulp should use, pass in an arguments flag that
+To distinguish what config file should be used, pass in an arguments flag that
 matches all or part of your site directory.
 ```js
 gulp default --site2
@@ -58,7 +59,7 @@ You can also manually pass in a environmental command to overwrite any in the co
 gulp default --site2 --production
 ```
 This will grab the config.json file in your site2 project and deep merge everything
-to your default config.json in the root. Note, Gulp Config Grabber will only use the first argument flag.
+to your default config.json in the root. Note, Configs will only use the first argument flag.
 
 ### Use Case
 
@@ -77,7 +78,7 @@ bespoke options for site2 only. You could create a new config.json.
 
 But if you update one config.json, you'll need to manage the changes for all your config.json files.
 
-This is where Gulp Config Grabber comes in. Create a config.json for each site
+This is where Configs comes in. Create a config.json for each site
 with ONLY the changes that need to be merged into your root config.json (default) file.
 ```
 project/
@@ -124,7 +125,7 @@ All objects can have special environmental nested options. If the first level of
 (which are defined either in the initial set up or via a command flag)... then that object will be flattened respectively.
 
 ```js
-const config = configs.grab({'env':'dev');
+const config = configs.grab({'env':process.env.ENVIRONMENT});
 ```
 
 #### Example config.json:
@@ -169,9 +170,8 @@ Will return this in a dev environment:
 
 ### Create
 
-
 Instead of `grab`, you can use `create` instead:
 ```
-const config = configs.create({'env': environment})
+const config = configs.create({'env': process.env.ENVIRONMENT})
 ```
 This does exactly the same as grab, only it generates a `config.lock` in the root path. This will contain the JSON code with environments managed and dynamic variable handled. The purpose of this is to avoid server-side languages (php) having to perform all the same logic.
