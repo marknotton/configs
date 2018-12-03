@@ -1,6 +1,6 @@
 {
   "name": "@marknotton/configs",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Combine multiple config.json files using a flag to distinguish different environments.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,8 @@
   "dependencies": {
 		"@marknotton/lumberjack": "^1.1.0",
     "minimist": "1.2.0",
-    "deepmerge": "2.1.1"
+    "deepmerge": "2.1.1",
+		"fs-extra": "7.0.1"
   },
   "keywords": [
     "config.json",
