@@ -1,6 +1,6 @@
 # Configs
 
-![Made For NPM](https://img.shields.io/badge/Made%20for-NPM-#CB3837.svg)
+![Made For NPM](https://img.shields.io/badge/Made%20for-NPM-orange.svg)
 
 Combine multiple config.json files using a flag to distinguish different environments.
 

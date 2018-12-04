@@ -1,6 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Settings
+// Configs
 ////////////////////////////////////////////////////////////////////////////////
+
+// =============================================================================
+// Settings
+// =============================================================================
 
 'use strict'
 
@@ -12,20 +16,35 @@ const path      = require('path'),                            // Handles and nor
       log       = require('@marknotton/lumberjack');
 
 const flags = Object.keys(argv).slice(1);
+let cache = null;
 
 module.exports.grab = grab;
 module.exports.create = create;
 
-////////////////////////////////////////////////////////////////////////////////
+// =============================================================================
 // Public Functions
-////////////////////////////////////////////////////////////////////////////////
+// =============================================================================
 
 // Create ----------------------------------------------------------------------
 
 function create() {
-  const config = grab(arguments[0]);
 
-  let type = 'Updated:';
+  let args  = arguments[0];
+	let force = false;
+	let type = 'Updated:';
+
+	if (!cache) {
+		cache = Object.assign({}, args);
+	}
+
+	if (typeof args == 'undefined' && cache != null ) {
+		args = Object.assign({}, cache);
+		force = true;
+		type = 'Recreated:';
+	}
+
+	let config = grab(args);
+
 
   fs.access('config.lock', (err) => {
     if (err) { type = 'Created:' }
@@ -34,9 +53,9 @@ function create() {
 	// Get the current config.lock data so that is can be compared to.
 	// IF the config settings has changed at all, generate a new .lock file.
 	fs.readJson('config.lock', (err, data) => {
-		if (err || JSON.stringify(data) != JSON.stringify(config)) {
+		if (force || err || JSON.stringify(data) != JSON.stringify(config)) {
 			fs.writeFile('config.lock', JSON.stringify(config, null, 2), function(err) {
-				log(type, 'config.lock');
+				log(type, 'config.lock', !force);
 			});
 		}
 	})

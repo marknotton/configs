@@ -1,6 +1,6 @@
 {
   "name": "@marknotton/configs",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Combine multiple config.json files using a flag to distinguish different environments.",
   "main": "index.js",
   "scripts": {
