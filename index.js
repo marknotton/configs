@@ -13,17 +13,36 @@ const path      = require('path'),                            // Handles and nor
       fs        = require('fs-extra'),                        // File system add, edit, and remove
       argv      = require('minimist')(process.argv.slice(2)), // Grabs flags passed via command
       deepmerge = require('deepmerge'),                       // Deep Merges Arrays/Ojects
-      log       = require('@marknotton/lumberjack');
+      log       = require('@marknotton/lumberjack'),
+			clearModule = require('clear-module');
 
 const flags = Object.keys(argv).slice(1);
 let cache = null;
+let defaultConfig = 'config.json';
 
 module.exports.grab = grab;
 module.exports.create = create;
+module.exports.update = update;
 
 // =============================================================================
 // Public Functions
 // =============================================================================
+
+// Create ----------------------------------------------------------------------
+
+function update() {
+
+	let args = arguments[0];
+
+	// Updates will need to clear the require cache of the config.json file. We
+	// can set that by setting the 'clear' argument to true;
+	args['clear'] = true;
+
+	// We'll also clear and previous cache.
+	cache = null;
+
+	return create(args);
+}
 
 // Create ----------------------------------------------------------------------
 
@@ -44,7 +63,6 @@ function create() {
 	}
 
 	let config = grab(args);
-
 
   fs.access('config.lock', (err) => {
     if (err) { type = 'Created:' }
@@ -67,19 +85,22 @@ function create() {
 
 function grab() {
 
-  let defaultConfig = 'config.json';
-
   // If an object was passed, destructure by checking for these variables.
   // Defaults are applied if 'file', isn't found.
   if ( typeof arguments[0] == 'object') {
-    var { file = defaultConfig, env, flag, directory, dynamic = ['paths']} = arguments[0];
+    var { file = defaultConfig, env, flag, directory, dynamic = ['paths'], clear = false} = arguments[0];
   } else {
     // If anything else was passed (presumably a string), use this as the file.
     var file = arguments[0] || defaultConfig;
   }
 
+	// Clear the require cache so that the next line renders the file from fresh.
+	if ( clear ) {
+		clearModule(path.join(process.cwd()) + '/' + file);
+	}
+
   // Get the config file relative to the gulpfile.js file
-  var config = require(path.join(process.cwd(), file));
+	var config = require(path.join(process.cwd(), file));
 
   // Grab any arguments flags that were passed via the command line.
   var siteFlag = flag || flags[0] || config['default-site'] || config['default'] || undefined;
